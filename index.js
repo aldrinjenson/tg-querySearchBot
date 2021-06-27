@@ -9,7 +9,7 @@ console.log("Up and running..");
 
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
-  const resp = `Hi,\nthis bot can search and find short answers for your queries.\nTo use, enter /qs followed by your query\neg: /qs largest animal in the world`;
+  const resp = `Hi,\nthis bot can help you query the internet directly from Telegram.\nTo use, enter /qs followed by a query\neg: /qs largest animal in the world`;
   bot.sendMessage(chatId, resp);
 });
 
@@ -17,7 +17,7 @@ const MAX_RESULTS = 3;
 
 bot.onText(/\/qs (.+)/, (msg, match) => {
   const chatId = msg.chat.id;
-  const query = match[1] || "largest animal in the world";
+  const query = match[1] || " ";
   bot.sendMessage(chatId, `Searching for ${query}...`);
 
   getResults(query).then((results) => {
