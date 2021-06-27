@@ -5,7 +5,7 @@ const { getResults } = require("./controller");
 
 const bot = new TelegramBot(process.env.BOT_TOKEN, { polling: true });
 bot.on("polling_error", console.log);
-console.log("Hello world!");
+console.log("Up and running..");
 
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
@@ -13,31 +13,12 @@ bot.onText(/\/start/, (msg) => {
   bot.sendMessage(chatId, resp);
 });
 
-bot.on("inline_query", (query) => {
-  console.log(query);
-  bot.sendMessage;
-});
-
-// bot.onText(/\/qs/, (msg) => {
-//   const chatId = msg.chat.id;
-//   bot.sendMessage(
-//     chatId,
-//     "Inavlid command format\nPlease enter /play song name\neg: /play hello adele"
-//   );
-// })
-
-// bot.addListener("inline_query", (query) => {
-//   // console.log(query);
-//   // get suggestions here
-//   bot.sendMessage(query.from.id, "hi");
-// });
-
 const MAX_RESULTS = 3;
 
 bot.onText(/\/qs (.+)/, (msg, match) => {
   const chatId = msg.chat.id;
   const query = match[1] || "largest animal in the world";
-  bot.sendMessage(chatId, "Searching..");
+  bot.sendMessage(chatId, `Searching for ${query}...`);
 
   getResults(query).then((results) => {
     for (let i = 0; i < MAX_RESULTS; i++) {
@@ -45,3 +26,27 @@ bot.onText(/\/qs (.+)/, (msg, match) => {
     }
   });
 });
+
+// bot.on("inline_query", async (msg) => {
+//   const query = msg.query;
+//   const results = await getSuggestions(query);
+//   const suggestions = results.map((text, index) => ({
+//     id: index,
+//     type: "article",
+//     title: text,
+//     message_text: `/qs ${text}`,
+//   }));
+
+//   bot.answerInlineQuery(msg.id, suggestions);
+// });
+
+// bot.on("message", (msg) => {
+//   console.log(msg);
+//   const query = msg.text;
+//   const chatId = msg.chat.id;
+//   getResults(query).then((results) => {
+//     for (let i = 0; i < MAX_RESULTS; i++) {
+//       bot.sendMessage(chatId, results[i]);
+//     }
+//   });
+// });

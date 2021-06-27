@@ -1,5 +1,26 @@
 const bing = require("bing-scraper");
 
+const getSuggestions = (query) => {
+  return new Promise((resolve, reject) => {
+    bing.suggest(query, (err, res) => {
+      if (err) {
+        reject(err);
+      }
+      resolve(res);
+    });
+  });
+};
+
+const MAX_LENGTH = 250;
+
+const truncateText = (text = "") => {
+  let res = text;
+  if (text.length > MAX_LENGTH) {
+    res = text.substring(0, MAX_LENGTH) + "...";
+  }
+  return res;
+};
+
 const getResults = (query) => {
   return new Promise((resolve, reject) => {
     bing.search(
@@ -14,7 +35,7 @@ const getResults = (query) => {
           const { results } = resp;
           const entries = results.map((item) => {
             const { title, description, url } = item;
-            const abstract = description.substring(0, 250) + "...";
+            const abstract = truncateText(description);
             return `${title}\n${abstract}\n${url}\n\n`;
           });
           resolve(entries);
@@ -24,4 +45,4 @@ const getResults = (query) => {
   });
 };
 
-module.exports = { getResults };
+module.exports = { getResults, getSuggestions };
