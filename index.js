@@ -5,6 +5,8 @@ const bing = require("bing-scraper");
 
 const bot = new TelegramBot(process.env.BOT_TOKEN, { polling: true });
 bot.on("polling_error", console.log);
+console.log("Hello world!")
+
 
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
@@ -38,7 +40,7 @@ const getResults = (query) => {
           const { results } = resp;
           const entries = results.map(item=>{
             const { title, description, url } = item;
-            const abstract = description.substring(0, 250) + "...";
+            const abstract = description.substring(0, 250) + "...";  // fix this 
             return `${title}\n${abstract}\n${url}\n\n`;
           })
           resolve(entries)

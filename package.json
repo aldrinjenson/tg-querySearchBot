@@ -1,14 +1,14 @@
 {
-  "name": "node-test",
+  "name": "tg-search-bot",
   "version": "1.0.0",
-  "description": "",
+  "description": "A bot to query the internet from telegram",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["node", "telegram","bot","query"],
+  "author": "Aldrin Jenson",
   "license": "ISC",
   "dependencies": {
     "axios": "^0.21.1",
