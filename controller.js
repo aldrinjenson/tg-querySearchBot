@@ -11,8 +11,7 @@ const getSuggestions = (query) => {
   });
 };
 
-const MAX_LENGTH = 250;
-
+const MAX_LENGTH = 250; // max charachters in description
 const truncateText = (text = "") => {
   let res = text;
   if (text.length > MAX_LENGTH) {
@@ -31,15 +30,14 @@ const getResults = (query) => {
       (err, resp) => {
         if (err) {
           reject(err);
-        } else {
-          const { results } = resp;
-          const entries = results.map((item) => {
-            const { title, description, url } = item;
-            const abstract = truncateText(description);
-            return `${title}\n${abstract}\n${url}\n\n`;
-          });
-          resolve(entries);
         }
+        const { results } = resp;
+        const entries = results.map((item) => {
+          const { title, description, url } = item;
+          const abstract = truncateText(description);
+          return `${title}\n${abstract}\n${url}\n\n`;
+        });
+        resolve(entries);
       }
     );
   });

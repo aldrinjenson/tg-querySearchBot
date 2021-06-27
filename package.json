@@ -7,11 +7,15 @@
     "start": "node index.js",
     "dev": "nodemon index.js"
   },
-  "keywords": ["node", "telegram","bot","query"],
+  "keywords": [
+    "node",
+    "telegram",
+    "bot",
+    "query"
+  ],
   "author": "Aldrin Jenson",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.21.1",
     "bing-scraper": "^1.4.11",
     "dotenv": "^10.0.0",
     "node-telegram-bot-api": "^0.53.0"
