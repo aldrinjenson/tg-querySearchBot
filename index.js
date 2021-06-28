@@ -21,7 +21,8 @@ console.log("Up and running..");
 
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
-  const resp = `Hi,\nthis bot can help you query the internet directly from Telegram.\nTo use, enter /qs followed by a query\neg: /qs software development`;
+  const resp =
+    "Hi,\nthis bot can help you query the internet directly from Telegram.\nEnter any query after a /qs for the top 3 results.\neg: /qs Software development best practices\nYou can get the top 1 result using /qs1 search_term\neg: /qs1 Nikola Tesla\nYou can also add this bot to groups and query using the same 2 commands";
   bot.sendMessage(chatId, resp);
 });
 
