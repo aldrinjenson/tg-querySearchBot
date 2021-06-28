@@ -7,8 +7,7 @@ const http = require("http");
 ////////////////// fix for heroku hosting - start//////////////////
 const requestListener = function (req, res) {
   res.writeHead(200);
-  const time = new Date().toLocaleTimeString("en-In");
-  res.end("Bot active\nCurrent Time: " + time);
+  res.end("Bot active\nCurrent Time: " + new Date());
 };
 const server = http.createServer(requestListener);
 const PORT = process.env.PORT || 5000;
