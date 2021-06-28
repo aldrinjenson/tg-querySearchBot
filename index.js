@@ -24,6 +24,32 @@ bot.onText(/\/start/, (msg) => {
   bot.sendMessage(chatId, resp);
 });
 
+bot.onText(/\/qs1$/, (msg) => {
+  const chatId = msg.chat.id || " ";
+  bot.sendMessage(
+    chatId,
+    "Please enter the query in the following format:\n /qs1 search_term"
+  );
+});
+
+bot.onText(/\/qs$/, (msg) => {
+  const chatId = msg.chat.id;
+  bot.sendMessage(
+    chatId,
+    "Please enter the query in the following format:\n /qs search_term"
+  );
+});
+
+bot.onText(/\/qs1 (.+)/, (msg, match) => {
+  const chatId = msg.chat.id;
+  const query = match[1] || " ";
+  bot.sendMessage(chatId, `Searching for ${query}...`);
+
+  getResults(query).then((results) => {
+    bot.sendMessage(chatId, results[0]);
+  });
+});
+
 const MAX_RESULTS = 3;
 bot.onText(/\/qs (.+)/, (msg, match) => {
   const chatId = msg.chat.id;
