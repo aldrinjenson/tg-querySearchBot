@@ -2,88 +2,73 @@ require("dotenv").config();
 process.env.NTBA_FIX_319 = 1;
 const TelegramBot = require("node-telegram-bot-api");
 const { getResults } = require("./controller");
-const http = require("http");
+const axios = require("axios");
 
-////////////////// fix for heroku hosting - start//////////////////
-const requestListener = function (req, res) {
-  res.writeHead(200);
-  res.end("Bot active\nCurrent Time: " + new Date());
-};
-const server = http.createServer(requestListener);
-const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => console.log("server listening"));
-////////////////// fix for heroku hosting - end//////////////////
-
-const bot = new TelegramBot(process.env.BOT_TOKEN, { polling: true });
+const BOT_TOKEN = process.env.BOT_TOKEN;
+const bot = new TelegramBot(BOT_TOKEN, { polling: true });
 bot.on("polling_error", console.log);
 console.log("Up and running..");
 
-bot.onText(/\/start/, (msg) => {
-  const chatId = msg.chat.id;
-  const resp =
-    "Hi,\nthis bot can help you query the internet directly from Telegram.\nEnter any query after a /qs for the top 3 results.\neg: /qs Software development best practices\nYou can get the top 1 result using /qs1 search_term\neg: /qs1 Nikola Tesla\nYou can also add this bot to groups and query using the same 2 commands";
-  bot.sendMessage(chatId, resp);
-});
-
-bot.onText(/\/qs1$/, (msg) => {
-  const chatId = msg.chat.id || " ";
-  bot.sendMessage(
-    chatId,
-    "Please enter the query in the following format:\n /qs1 search_term"
-  );
-});
-
-bot.onText(/\/qs$/, (msg) => {
-  const chatId = msg.chat.id;
-  bot.sendMessage(
-    chatId,
-    "Please enter the query in the following format:\n /qs search_term"
-  );
-});
-
-bot.onText(/\/qs1 (.+)/, (msg, match) => {
-  const chatId = msg.chat.id;
-  const query = match[1] || " ";
-  bot.sendMessage(chatId, `Searching for ${query}...`);
-
-  getResults(query).then((results) => {
-    bot.sendMessage(chatId, results[0]);
-  });
-});
+bot.sendMessage = async (chatId, text) => {
+  const msgText = encodeURI(text); // for accounting for spaces
+  try {
+    await axios.get(
+      `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${chatId}&text=${msgText}`
+    );
+  } catch (err) {
+    console.log("Error in sending message: " + err);
+  }
+};
 
 const MAX_RESULTS = 3;
-bot.onText(/\/qs (.+)/, (msg, match) => {
-  const chatId = msg.chat.id;
-  const query = match[1] || " ";
-  bot.sendMessage(chatId, `Searching for ${query}...`);
+const main = async (chatId, text) => {
+  const words = text?.split(" ");
+  const command = words[0];
+  const queryTerm = words.slice(1).join(" ");
+  if (command === "qs" && !queryTerm.length) {
+    return bot.sendMessage(
+      chatId,
+      "Please enter the query in the following format:\n /qs search_term"
+    );
+  }
+  switch (command) {
+    case "/start":
+      bot.sendMessage(
+        chatId,
+        "Hi,\nthis bot can help you query the internet directly from Telegram.\nEnter any query after a /qs for the top 3 results.\neg: /qs Software development best practices\nYou can get the top 1 result using /qs1 search_term\neg: /qs1 Nikola Tesla\nYou can also add this bot to groups and query using the same 2 commands"
+      );
+      break;
+    case "/qs":
+      bot.sendMessage(chatId, `Searching for ${queryTerm}...`);
+      const results = await getResults(queryTerm);
+      for (let i = 0; i < MAX_RESULTS; i++) {
+        bot.sendMessage(chatId, results[i]);
+      }
+      break;
+    case "/qs1":
+      bot.sendMessage(chatId, `Searching for ${queryTerm}...`);
+      const [firstResult] = await getResults(queryTerm);
+      bot.sendMessage(chatId, firstResult);
+      break;
+    default:
+      bot.sendMessage(
+        chatId,
+        "Please enter a valid query using /qs <searchTerm>"
+      );
+      break;
+  }
+};
 
-  getResults(query).then((results) => {
-    for (let i = 0; i < MAX_RESULTS; i++) {
-      bot.sendMessage(chatId, results[i]);
-    }
-  });
+bot.on("message", async (msg) => {
+  const chatId = msg.chat.id;
+  const text = msg.text;
+  console.log(msg);
+  main(chatId, text);
 });
 
-// // works, but not really needed for a query
-// bot.on("inline_query", async (msg) => {
-//   const query = msg.query;
-//   const results = await getSuggestions(query);
-//   const suggestions = results.map((text, index) => ({
-//     id: index,
-//     type: "article",
-//     title: text,
-//     message_text: `/qs ${text}`,
-//   }));
-//   bot.answerInlineQuery(msg.id, suggestions);
-// });
-
-// bot.on("message", (msg) => {
-//   console.log(msg);
-//   const query = msg.text;
-//   const chatId = msg.chat.id;
-//   getResults(query).then((results) => {
-//     for (let i = 0; i < MAX_RESULTS; i++) {
-//       bot.sendMessage(chatId, results[i]);
-//     }
-//   });
-// });
+module.exports.querySearchBot = async (event) => {
+  const body = JSON.parse(event.body);
+  const { chat, text } = body.message;
+  const chatId = chat.id;
+  main(chatId, text);
+};

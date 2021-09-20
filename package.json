@@ -16,6 +16,7 @@
   "author": "Aldrin Jenson",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.21.4",
     "bing-scraper": "^1.4.11",
     "dotenv": "^10.0.0",
     "node-telegram-bot-api": "^0.53.0"

@@ -29,7 +29,9 @@ const getResults = (query) => {
       },
       (err, resp) => {
         if (err) {
+          console.log("Error in getting results: " + err);
           reject(err);
+          return;
         }
         const { results } = resp;
         const entries = results.map((item) => {
