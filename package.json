@@ -4,8 +4,8 @@
   "description": "A bot to query the internet from telegram",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js"
+    "start": "node handler.js",
+    "dev": "nodemon handler.js"
   },
   "keywords": [
     "node",
