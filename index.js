@@ -2,10 +2,9 @@ require("dotenv").config();
 process.env.NTBA_FIX_319 = 1;
 const { getResults } = require("./controller");
 const axios = require("axios");
-const TelegramBot = require("node-telegram-bot-api");
-
 const BOT_TOKEN = process.env.BOT_TOKEN;
 console.log("Up and running..");
+const TelegramBot = require("node-telegram-bot-api");
 
 // // For testing purposes
 // const bot = new TelegramBot(BOT_TOKEN, { polling: true });
@@ -18,19 +17,12 @@ console.log("Up and running..");
 
 const bot = {};
 bot.sendMessage = async (chatId, text) => {
-  const msgText = encodeURI(text); // for accounting for spaces
   try {
+    const fixedEncodeURI = (str) => {
+      return encodeURI(str).replace(/%5B/g, "[").replace(/%5D/g, "]");
+    };
+    const msgText = fixedEncodeURI(text) || text; // for accounting for spaces
     return await axios.get(
-      `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${chatId}&text=${msgText}`
-    );
-  } catch (err) {
-    console.log("Error in sending message: " + err);
-  }
-};
-sendMessage = async (chatId, text) => {
-  const msgText = encodeURI(text); // for accounting for spaces
-  try {
-    await axios.get(
       `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${chatId}&text=${msgText}`
     );
   } catch (err) {
@@ -89,8 +81,11 @@ module.exports.querybot = async (event) => {
     err = "no event.body";
   }
   return {
-    msg: "active",
-    err,
+    statusCode: 200,
+    body: JSON.stringify({
+      msg: "bot active",
+      err,
+    }),
   };
 };
 module.exports.ping = async () => {
