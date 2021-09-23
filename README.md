@@ -20,4 +20,10 @@ To try, check out [@querySearchBot](https://t.me/querySearchBot)
   - GET webhook info: https://api.telegram.org/bot{my_bot_token}/getWebhookInfo
   - SET Webhook: https://api.telegram.org/bot(mytoken)/setWebhook?url=https://mywebpagetorespondtobot/mymethod
   - Delete Webhook: https://api.telegram.org/bot{my_bot_token}/deleteWebhook
-- Note: Serverless Lambda supports only NodeJS v12 for now. Any later features like conditional chaining in later versions of node is not currently supported.
+
+#### Some gotchas to keep in mind
+
+- Serverless Lambda supports only NodeJS v12 for now. Any later features like conditional chaining in later versions of node is not currently supported.
+- It is important that you return an object with statusCode 200 so that telegram understands that the query has been successfully answered.
+- when you want to send JSON, ensure that you send it after stringifying it first
+- For sending URLs sometime you may get the error `TypeError: Request path contains unescaped characters` which can be fixed using [this answer](https://stackoverflow.com/a/62437210/11879596)
