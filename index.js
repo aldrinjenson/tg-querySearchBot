@@ -32,41 +32,49 @@ bot.sendMessage = async (chatId, text) => {
 
 const MAX_RESULTS = 3;
 const main = async (chatId, text) => {
-  if (!text) return await bot.sendMessage(chatId, "Text empty");
-  const words = text.split(" ");
-  const command = words[0];
-  const queryTerm = words.slice(1).join(" ");
-  if (command === "qs" && !queryTerm.length) {
-    return await bot.sendMessage(
-      chatId,
-      "Please enter the query in the following format:\n /qs search_term"
-    );
+  if (!text || !chatId) {
+    console.log("text or chatId not received");
+    console.log({ text, chatId });
+    return;
   }
-  switch (command) {
-    case "/start":
-      await bot.sendMessage(
+  try {
+    const words = text.split(" ");
+    const command = words[0];
+    const queryTerm = words.slice(1).join(" ");
+    if (command === "/qs" && !queryTerm.length) {
+      return await bot.sendMessage(
         chatId,
-        "Hi,\nthis bot can help you query the internet directly from Telegram.\nEnter any query after a /qs for the top 3 results.\neg: /qs Software development best practices\nYou can get the top 1 result using /qs1 search_term\neg: /qs1 Nikola Tesla\nYou can also add this bot to groups and query using the same 2 commands"
+        "Please enter the query in the following format:\n /qs search_term"
       );
-      break;
-    case "/qs":
-      await bot.sendMessage(chatId, `Searching for ${queryTerm}...`);
-      const results = await getResults(queryTerm);
-      for (let i = 0; i < MAX_RESULTS; i++) {
-        await bot.sendMessage(chatId, results[i]);
-      }
-      break;
-    case "/qs1":
-      await bot.sendMessage(chatId, `Searching for ${queryTerm}...`);
-      const [firstResult] = await getResults(queryTerm);
-      await bot.sendMessage(chatId, firstResult);
-      break;
-    default:
-      await bot.sendMessage(
-        chatId,
-        "Please enter a valid query using /qs <searchTerm>"
-      );
-      break;
+    }
+    switch (command) {
+      case "/start":
+        await bot.sendMessage(
+          chatId,
+          "Hi,\nthis bot can help you query the internet directly from Telegram.\nEnter any query after a /qs for the top 3 results.\neg: /qs Software development best practices\nYou can get the top 1 result using /qs1 search_term\neg: /qs1 Nikola Tesla\nYou can also add this bot to groups and query using the same 2 commands"
+        );
+        break;
+      case "/qs":
+        await bot.sendMessage(chatId, `Searching for ${queryTerm}...`);
+        const results = await getResults(queryTerm);
+        for (let i = 0; i < MAX_RESULTS; i++) {
+          await bot.sendMessage(chatId, results[i]);
+        }
+        break;
+      case "/qs1":
+        await bot.sendMessage(chatId, `Searching for ${queryTerm}...`);
+        const [firstResult] = await getResults(queryTerm);
+        await bot.sendMessage(chatId, firstResult);
+        break;
+      default:
+        await bot.sendMessage(
+          chatId,
+          "Please enter a valid query using /qs <searchTerm>"
+        );
+        break;
+    }
+  } catch (err) {
+    console.log("Error in main: " + err);
   }
 };
 
