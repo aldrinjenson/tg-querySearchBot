@@ -4,9 +4,9 @@ const { getResults } = require("./controller");
 const axios = require("axios");
 const BOT_TOKEN = process.env.BOT_TOKEN;
 console.log("Up and running..");
-const TelegramBot = require("node-telegram-bot-api");
 
 // // For testing purposes
+// const TelegramBot = require("node-telegram-bot-api");
 // const bot = new TelegramBot(BOT_TOKEN, { polling: true });
 // bot.on("message", async (msg) => {
 //   const chatId = msg.chat.id;
